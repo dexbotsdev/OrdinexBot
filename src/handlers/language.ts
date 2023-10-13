@@ -6,5 +6,6 @@ export default function handleLanguage(ctx: Context) {
   return ctx.replyWithLocalization('language', {
     ...sendOptions(ctx),
     reply_markup: languageMenu,
+
   })
 }

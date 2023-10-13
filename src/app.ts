@@ -12,6 +12,19 @@ import i18n from '@/helpers/i18n'
 import languageMenu from '@/menus/language'
 import sendHelp from '@/handlers/help'
 import startMongo from '@/helpers/startMongo'
+import UserContext from './models/Context'
+import startBot from './handlers/start'
+import { StartScreenMenu } from './menus/StartScreenMenus'
+import { DeleteMessageMenu } from './menus/DeleteMessageMenu'
+import { ProfileScreenMenu } from './menus/ProfileScreenMenu'
+import { CaptureTagQuestion } from './handlers/CaptureStarTag'
+import { CustomAlertsMenu } from './menus/CustomAlertsMenu'
+import { MinScoreQuestion, minTwitterFollowersQuestion } from './handlers/CustomAlerts'
+import { WelcomeUser } from './handlers/WelcomeUser'
+import { BackMainMenu } from './menus/BackMainMenu'
+import { Snipermenu } from './menus/SniperMenu'
+import { SettingsMenu } from './menus/SettingsMenu'
+import { MaxGasLimitQuestion, MaxGasPriceQuestion, SettingsScreen } from './handlers/SettingsScreen'
 
 async function runApp() {
   console.log('Starting app...')
@@ -19,17 +32,26 @@ async function runApp() {
   await startMongo()
   console.log('Mongo connected')
   bot
-    // Middlewares
-    .use(sequentialize())
-    .use(ignoreOld())
     .use(attachUser)
-    .use(i18n.middleware())
-    .use(configureI18n)
-    // Menus
-    .use(languageMenu)
-  // Commands
-  bot.command(['help', 'start'], sendHelp)
-  bot.command('language', handleLanguage)
+    .use(BackMainMenu)
+    .use(Snipermenu)
+    .use(SettingsMenu)
+    .use(DeleteMessageMenu)
+    .use(CustomAlertsMenu)
+    .use(ProfileScreenMenu)
+    .use(StartScreenMenu)
+    .use(CaptureTagQuestion.middleware())
+    .use(MinScoreQuestion.middleware())
+    .use(minTwitterFollowersQuestion.middleware())
+    .use(MaxGasLimitQuestion.middleware())
+    .use(MaxGasPriceQuestion.middleware())
+
+
+  bot.command('start', startBot)
+  bot.command('menu', WelcomeUser)
+  bot.command('settings', SettingsScreen)
+
+
   // Errors
   bot.catch(console.error)
   // Start bot
