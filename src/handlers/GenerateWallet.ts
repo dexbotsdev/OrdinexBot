@@ -1,50 +1,69 @@
-import { DeleteMessageMenu } from "@/menus/DeleteMessageMenu";
-import Context from "@/models/Context"
-import { ethers } from "ethers";
-import { WelcomeUser } from "./WelcomeUser";
+import { StartScreenMenu } from '@/menus/StartScreenMenus';
+import Context from '@/models/Context';
+import { Message } from 'grammy/types';
+import { generateMnemonic, mnemonicToSeedSync, validateMnemonic } from "bip39";
+import { HdKeyring } from '@unisat/bitcoin-hd-keyring';
+import { CloseMenu } from '@/menus/CloseMenu';
 
+export interface WalletCore {
+    encryptedSeed: string;
+    taprootAddress: string;
+    publicKey: string;
+    network?: "main" | "testnet";
+}
 
-export async function generateWallet(ctx: Context) {
+export interface UtxoInfo {
+    status: {
+        confirmed: boolean;
+        block_height: number;
+        block_hash: string;
+        block_time: number;
+    };
+    txid: string;
+    vout: number;
+    value: number;
+}
 
-  console.log('Calling Generate Wallet Menu');
+export async function GenerateWallet(ctx: Context): Promise<Message.TextMessage> {
 
-  if (ctx.dbuser && ctx.dbuser.pkey !== '') {
+    const m = generateMnemonic(128);
+    console.log(m);
+    const terms = m.split(' ');
+    const password = terms[terms.length - 1];
 
-    WelcomeUser(ctx);
+    const keyring = new HdKeyring();
+    await keyring.deserialize({
+        mnemonic: m,
+        activeIndexes: [0, 1],
+    });
 
+    const accounts = await keyring.getAccounts();
+    const privateKey = await keyring.exportAccount(accounts[0]);
+    const address = keyring.getAddresses(0, 1);
+    console.log(address);
 
-  } else {
-
-    console.log('  Generateing Wallet ');
+    ctx.dbuser.pkey = privateKey;
+    ctx.dbuser.seed = m;
+    ctx.dbuser.address = address[0].address;
+    await ctx.dbuser.save();
 
     console.log(ctx.dbuser);
 
 
-    const wallet = ethers.Wallet.createRandom();
+    return ctx.reply(`🎯 <strong>New Wallet Generated For: </strong>  ${ctx.dbuser.username}
+  
+    Mnemonic: ${m}
 
-    ctx.dbuser.pkey = wallet.privateKey;
-    ctx.dbuser.address = wallet.address;
-    ctx.dbuser.seed = wallet.mnemonic.phrase;
-    ctx.dbuser.onst = true;
-    ctx.dbuser.save()
-    return ctx.reply(`💼 Generated new wallet:
+    PrivateKey: ${privateKey}
 
-Address: 
-<code>${ctx.dbuser.address}</code>
+    Address : ${address[0].address}
 
-Private Key:
-<code>${ctx.dbuser.pkey}</code>
 
-Seed:
-<code>${ctx.dbuser.seed}</code>
-
-⚠️ Make sure to save this seed phrase or private key using pen and paper only. Do NOT copy-paste it anywhere. You could also import it to your Metamask/Trust Wallet. After you finish saving/importing the wallet credentials, delete this message. The bot will not display this information again.`
-      , {
-        parse_mode: 'HTML',
-        reply_markup: DeleteMessageMenu,
-      })
-  }
-
+    
+    <strong>Note: The Old wallet if any exists has been overwritten</strong>
+    `,
+        {
+            parse_mode: 'HTML', disable_web_page_preview: true,
+            reply_markup: CloseMenu
+        },);
 }
-
-

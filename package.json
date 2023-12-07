@@ -14,16 +14,28 @@
     "lint": "yarn pretty && eslint --max-warnings 0 --ext ts,tsx,json src"
   },
   "dependencies": {
+    "@cmdcode/crypto-utils": "^2.4.6",
+    "@cmdcode/tapscript": "^1.4.4",
     "@grammyjs/i18n": "^0.5.0",
     "@grammyjs/menu": "^1.0.4",
     "@grammyjs/runner": "^1.0.3",
     "@grammyjs/stateless-question": "^3.0.1",
+    "@scure/bip32": "^1.3.2",
+    "@unisat/bitcoin-hd-keyring": "^1.2.0",
+    "axios": "^1.6.2",
+    "bip39": "^3.1.0",
     "dotenv": "^10.0.0",
     "envalid": "^7.2.2",
     "ethers": "^5.7.2",
+    "fs": "^0.0.1-security",
     "grammy": "^1.5.0",
     "grammy-middlewares": "^1.0.11",
-    "mongoose": "^6.1.0"
+    "ipfs-http-client": "^60.0.1",
+    "mime": "^4.0.0",
+    "mongoose": "^6.1.0",
+    "nft.storage": "^7.1.1",
+    "node-fetch": "^3.3.2",
+    "path": "^0.12.7"
   },
   "devDependencies": {
     "@typegoose/typegoose": "^9.3.1",
