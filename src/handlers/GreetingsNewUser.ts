@@ -4,7 +4,7 @@ import { Message } from 'grammy/types';
 
 export function GreetingsNewUser(ctx: Context): Promise<Message> {
 
-    return ctx.replyWithPhoto('https://www.cryptotimes.io/wp-content/uploads/2023/03/Bitcoin_ordinals-1.jpg', {
+    return ctx.replyWithPhoto('https://i.ibb.co/WBWP2SY/Ordinance-BRC.jpg', {
         caption: `🎯 Welcome to the OrdiNextBot   ${ctx.dbuser.username}
   
 Introducing OrdiNextBot, the easy and fastest way to generate inscription orders from anywhere, 
